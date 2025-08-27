@@ -3,8 +3,7 @@ import math
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple, List
 
-# --- Problem Setup ---
-# Each module = (width, height)
+# size of each rectangle
 modules: Dict[str, Tuple[int, int]] = {
     "A": (2, 3),
     "B": (3, 2),
@@ -18,7 +17,7 @@ modules: Dict[str, Tuple[int, int]] = {
     "J": (2, 2),
 }
 
-# Nets: which modules are connected
+# Relation Between the Modules
 nets: List[Tuple[str, str]] = [
     ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"),
     ("E", "F"), ("F", "G"), ("G", "H"),
@@ -26,13 +25,14 @@ nets: List[Tuple[str, str]] = [
     ("B", "F"), ("C", "H"), ("D", "J")
 ]
 
+# chip dimensions(20x20)
 CHIP_W: int = 20
 CHIP_H: int = 20
 
 
 def random_placement(mods: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
     """
-    Generate a random placement of modules within the chip area.
+    Randomly places the modules within the chip area.
 
     Args:
         mods (Dict[str, Tuple[int, int]]): Dictionary of modules with dimensions (width, height).
@@ -41,16 +41,19 @@ def random_placement(mods: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, i
         Dict[str, Tuple[int, int]]: Placement mapping module -> (x, y) bottom-left coordinates.
     """
     placement: Dict[str, Tuple[int, int]] = {}
+
     for m, (w, h) in mods.items():
         x: int = random.randint(0, CHIP_W - w)
         y: int = random.randint(0, CHIP_H - h)
+
         placement[m] = (x, y)
+
     return placement
 
 
 def cost(placement: Dict[str, Tuple[int, int]]) -> float:
     """
-    Compute the cost of a placement.
+    Computes the cost of a placement.
 
     Cost = total wirelength + overlap penalty.
 
@@ -61,7 +64,7 @@ def cost(placement: Dict[str, Tuple[int, int]]) -> float:
         float: Cost of the placement.
     """
     wl: float = 0.0
-    # Wirelength = Manhattan distance between module centers
+    # Wirelength = Manhattan distance between the center of the modules.
     for a, b in nets:
         xa, ya = placement[a]
         xb, yb = placement[b]
@@ -75,13 +78,17 @@ def cost(placement: Dict[str, Tuple[int, int]]) -> float:
     overlap: float = 0.0
     mods_list: List[Tuple[str, Tuple[int, int]]] = list(placement.items())
     for i in range(len(mods_list)):
+
         m1, (x1, y1) = mods_list[i]
         w1, h1 = modules[m1]
+
         for j in range(i+1, len(mods_list)):
+
             m2, (x2, y2) = mods_list[j]
             w2, h2 = modules[m2]
+
             if not (x1+w1 <= x2 or x2+w2 <= x1 or y1+h1 <= y2 or y2+h2 <= y1):
-                overlap += 10  # penalty if overlapping
+                overlap += 10
     return wl + overlap
 
 
@@ -129,9 +136,11 @@ def plot_placement(placement: Dict[str, Tuple[int, int]], title: str = "") -> No
     plt.grid(True)
     plt.show()
 
+# Simulated Annealing
+
 
 def simulated_annealing(
-    max_iter: int = 8000,
+    max_iter: int = 50000,
     T_start: float = 100.0,
     cooling: float = 0.995
 ) -> Tuple[Dict[str, Tuple[int, int]], float, List[float]]:
@@ -191,4 +200,3 @@ plt.show()
 
 # --- Plot final placement ---
 plot_placement(best_placement, title=f"Final Placement (Cost={best_c})")
-
