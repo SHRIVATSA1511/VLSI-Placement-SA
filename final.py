@@ -1,5 +1,3 @@
-#! C:\Users\shriv\OneDrive\Documents\Simulated_anneling\myenv\Scripts\python.exe
-
 import random
 import math
 import matplotlib.pyplot as plt
@@ -193,3 +191,4 @@ plt.show()
 
 # --- Plot final placement ---
 plot_placement(best_placement, title=f"Final Placement (Cost={best_c})")
+
