@@ -1,3 +1,5 @@
+#! C:\Users\shriv\OneDrive\Documents\Simulated_anneling\myenv\Scripts\python.exe
+
 import random
 import math
 import matplotlib.pyplot as plt
@@ -26,25 +28,22 @@ nets: List[Tuple[str, str]] = [
 ]
 
 # chip dimensions(20x20)
-CHIP_W: int = 20
-CHIP_H: int = 20
+CHIPLENGTH: int = 20
+CHIPWIDTH: int = 20
 
 
 def random_placement(mods: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
     """
     Randomly places the modules within the chip area.
 
-    Args:
-        mods (Dict[str, Tuple[int, int]]): Dictionary of modules with dimensions (width, height).
-
     Returns:
-        Dict[str, Tuple[int, int]]: Placement mapping module -> (x, y) bottom-left coordinates.
+       (x, y) bottom-left coordinates.
     """
     placement: Dict[str, Tuple[int, int]] = {}
 
     for m, (w, h) in mods.items():
-        x: int = random.randint(0, CHIP_W - w)
-        y: int = random.randint(0, CHIP_H - h)
+        x: int = random.randint(0, CHIPLENGTH - w)
+        y: int = random.randint(0, CHIPWIDTH - h)
 
         placement[m] = (x, y)
 
@@ -57,11 +56,8 @@ def cost(placement: Dict[str, Tuple[int, int]]) -> float:
 
     Cost = total wirelength + overlap penalty.
 
-    Args:
-        placement (Dict[str, Tuple[int, int]]): Current module placement.
-
     Returns:
-        float: Cost of the placement.
+         Cost of the placement.
     """
     wl: float = 0.0
     # Wirelength = Manhattan distance between the center of the modules.
@@ -92,38 +88,32 @@ def cost(placement: Dict[str, Tuple[int, int]]) -> float:
     return wl + overlap
 
 
-def random_move(placement: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
+def randommove(placement: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
     """
     Generate a new placement by moving a single random module.
 
-    Args:
-        placement (Dict[str, Tuple[int, int]]): Current module placement.
-
     Returns:
-        Dict[str, Tuple[int, int]]: New placement after moving one module.
+        New placement after moving one module.
     """
     new_place: Dict[str, Tuple[int, int]] = placement.copy()
     m: str = random.choice(list(modules.keys()))
     w, h = modules[m]
     new_place[m] = (
-        random.randint(0, CHIP_W - w),
-        random.randint(0, CHIP_H - h)
+        random.randint(0, CHIPLENGTH - w),
+        random.randint(0, CHIPWIDTH - h)
     )
     return new_place
 
 
-def plot_placement(placement: Dict[str, Tuple[int, int]], title: str = "") -> None:
+def plotplacement(placement: Dict[str, Tuple[int, int]], title: str = "") -> None:
     """
     Plot the current placement of modules on the chip.
 
-    Args:
-        placement (Dict[str, Tuple[int, int]]): Placement mapping module -> (x, y).
-        title (str): Title of the plot.
     """
     plt.figure(figsize=(6, 6))
     ax = plt.gca()
-    ax.set_xlim(0, CHIP_W)
-    ax.set_ylim(0, CHIP_H)
+    ax.set_xlim(0, CHIPLENGTH)
+    ax.set_ylim(0, CHIPWIDTH)
 
     for m, (x, y) in placement.items():
         w, h = modules[m]
@@ -140,20 +130,19 @@ def plot_placement(placement: Dict[str, Tuple[int, int]], title: str = "") -> No
 
 
 def simulated_annealing(
-    max_iter: int = 50000,
+    max: int = 50000,
     T_start: float = 100.0,
     cooling: float = 0.995
 ) -> Tuple[Dict[str, Tuple[int, int]], float, List[float]]:
     """
-    Perform Simulated Annealing for VLSI floorplanning.
+    Performs Simulated Annealing for VLSI floorplanning.
 
-    Args:
-        max_iter (int): Maximum iterations for the annealing process.
-        T_start (float): Starting temperature.
-        cooling (float): Cooling factor per iteration.
+        Arguments:
+        max: Maximum iterations for the annealing process.
+        T_start : Starting temperature.
+        cooling : Cooling factor per iteration.
 
     Returns:
-        Tuple[Dict[str, Tuple[int, int]], float, List[float]]:
             - Best placement found
             - Best cost value
             - Cost history across iterations
@@ -165,8 +154,8 @@ def simulated_annealing(
 
     cost_history: List[float] = []
 
-    for i in range(max_iter):
-        new_place = random_move(placement)
+    for i in range(max):
+        new_place = randommove(placement)
         c_old: float = cost(placement)
         c_new: float = cost(new_place)
 
@@ -199,4 +188,4 @@ plt.grid(True)
 plt.show()
 
 # --- Plot final placement ---
-plot_placement(best_placement, title=f"Final Placement (Cost={best_c})")
+plotplacement(best_placement, title=f"Final Placement (Cost={best_c})")
