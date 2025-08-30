@@ -29,7 +29,7 @@
 % DATES
 %----------------------------------------------------------
 
-\dates{This manuscript was compiled on \today}
+\dates{This manuscript was compiled on August 21,2025}
 
 %----------------------------------------------------------
 % FOOTER INFORMATION
@@ -72,24 +72,24 @@
 
 \section{Introduction}
 
-\lettrine{V}{ery-Large-Scale Integration (VLSI)}) refers to the process of integrating thousands to millions of transistors onto a single silicon chip, enabling the creation of highly complex and powerful integrated circuits (ICs) \cite{Weste}. VLSI has been the driving force behind modern computing and communication systems, forming the foundation of microprocessors, memory devices, and application-specific integrated circuits (ASICs). With continuous advancements in semiconductor technology, the demand for faster, smaller, and more energy-efficient devices has grown, making efficient VLSI design methodologies increasingly critical \cite{Sangiovanni}.  
+\lettrine{V}{ery-Large-Scale Integration (VLSI)}) is the integration of thousands to millions of transistors onto a single silicon chip, allowing highly complex and powerful integrated circuits (ICs) to be created (\cite{chen2011,ictact2016}) . VLSI has driven the evolution of mordern computing and communication systems and is the basis of microprocessors, memory devices, and application-specific integrated circuits (ASICs). As semiconductor technology continues to advance, the need for devices that are faster, smaller, and consume less energy increases, necessitating efficient VLSI design methodologies more than ever (\cite{chen2005,ictact2016}).  
 
-A fundamental step in the VLSI design flow is \textbf{chip floor-planning}, which determines the spatial arrangement of modules on the chip die. An optimized floor-plan ensures minimal wiring complexity, reduced signal delay, balanced area utilization, and improved thermal and power distribution \cite{Sherwani}. Conversely, poor floor-planning can lead to excessive wire length, routing congestion, timing violations, and suboptimal chip performance. Due to the exponential growth of possible placements as the number of modules increases, floor-planning is categorized as an \textbf{NP-hard combinatorial optimization problem} \cite{WongSA}. This complexity has driven the adoption of heuristic and metaheuristic approaches for practical solutions.  
+One of the core steps in the VLSI design process is \textbf{chip floor-planning},which decides the physical organization of the modules on the chip die(\cite{chen2005}). An optimal floor-plan guarantees minimal wiring complexity, less signal delay, equitable utilization of area, and better thermal and power distribution. On the other hand, if floor-planning is done poorly, it can result in large wire lengths, routing congestion, timing violations, and inefficient chip performance. As the number of modules increases, the number of potential placements grows exponentially, classifying floor-planning as an \textbf{NP-hard combinatorial optimization problem} (\cite{kirkpatrick1983,chen2011}).  The complexity has motivated the use of heuristic and metaheuristic methods to find solutions in practice.
 
-Among the various metaheuristics, \textbf{simulated annealing (SA)} has proven particularly effective in VLSI design \cite{Kirkpatrick}. SA is inspired by the physical process of annealing in metallurgy, where a material is slowly cooled to achieve a low-energy crystalline state. The algorithm mirrors this process by probabilistically accepting not only better solutions but also, with decreasing probability, worse solutions. This property allows the search to escape local minima and approximate a global optimum. In the context of floor-planning, the cost function typically combines the \textit{total wire length} of interconnections and \textit{overlap penalties} between modules. By iteratively refining placements while controlling the acceptance of worse solutions through a cooling schedule, SA converges toward high-quality, non-overlapping layouts.  
+Of all the different metaheuristics, \textbf{simulated annealing (SA)} has proven particularly effective in VLSI design (\cite{kirkpatrick1983}). SA takes its inspiration from the metallurgical process of annealing, where a piece of material is cooled slowly to reach a state of low-energy crystalline form. The algorithm imitates this by accepting not just better solutions but, with decreasing probability, worse solutions probabilistically. This attribute enables the search to avoid local minima and find an approximation of the global optimum (\cite{chen2011,fang2009}). In floor-planning, the cost function generally integrates the \textit{total wire length} of interconnections and \textit{overlap penalties} among modules. Simulated Annealing progressively refines placements, with the cooling schedule making worse moves less likely to be accepted as time progresses, resulting in good-quality, non-overlapping layouts.
 
-Therefore, simulated annealing provides a robust and practical framework for addressing the challenges of chip floor-planning in VLSI design, striking a balance between computational feasibility and solution quality.  
+Hence, simulated annealing represents a strong and realistic framework for solving the challenges of chip floor-planning in VLSI design, balancing computational achievability and solution quality  (\cite{parsac2024,sun2024}).  
 
 \section{Problem Formulation}
 
-The \textbf{chip floor-planning problem} can be formally described as arranging a set of rectangular modules within a fixed chip boundary while minimizing interconnection cost and avoiding overlaps \cite{Sherwani}. Each module is defined by its width and height, and its placement is specified by the coordinates of its bottom-left corner on the chip. The design must satisfy geometric and functional constraints while optimizing for layout quality.  
+The \textbf{chip floor-planning problem} mathematically can be formulated as positioning an array of rectangular modules within a specified chip boundary to reduce interconnection cost and avoid overlaps (\cite{chen2005,ictact2016}).A module is defined by its width and height, and its location by the coordinates of its bottom-left corner on the chip. The layout should satisfy geometric and functional constraints while layout quality is optimized.
 
 \subsection{Modules and Chip Boundary}
 Let
 \[
 M = \{m_1, m_2, \dots, m_n\}
 \]
-be the set of $n$ modules, where each module $m_i$ has dimensions $(w_i, h_i)$. The chip is modeled as a rectangular die of dimensions $W \times H$. A valid placement assigns each module to a position $(x_i, y_i)$ such that:  
+be the set of $n$ modules, where each module $m_i$ has dimensions $(w_i, h_i)$. The chip is modeled as a rectangular die of dimensions $W \times H$. A legal placement positions each module to a position $(x_i, y_i)$ such that:  
 
 \[
 0 \leq x_i \leq W - w_i, \quad 0 \leq y_i \leq H - h_i
@@ -103,20 +103,20 @@ The communication requirements between modules are represented as a set of \text
 N = \{ (m_i, m_j) \,|\, m_i, m_j \in M \}
 \]
 
-Each net defines a direct electrical connection between two modules. The cost of a net is measured by the \textbf{Manhattan distance} between the centers of the connected modules:  
+Each net defines a one-to-one direct wire connection between two modules. A net is characterized by the cost of the  \textbf{Manhattan distance} between the centers of the connected modules:  
 
 \[
 d(m_i, m_j) = |(x_i + w_i/2) - (x_j + w_j/2)| + |(y_i + h_i/2) - (y_j + h_j/2)|
 \]
 
-The \textbf{total wire length} is then the sum of all net distances:  
+The \textbf{total wire length} is then the sum of all net distances (\cite{chen2005}):  
 
 \[
 WL = \sum_{(m_i, m_j) \in N} d(m_i, m_j)
 \]
 
 \subsection{Overlap Constraint}
-Modules must not overlap, as overlaps represent physically infeasible designs. To enforce this, an \textbf{overlap penalty} is added to the cost function whenever two modules intersect. A simple penalty model is:  
+Modules must not overlap since overlaps are physically infeasible designs. To penalize this constraint, an  \textbf{overlap penalty} is applied to the cost function if two modules overlap. A simple penalty model is: 
 
 \[
 P = \lambda \cdot \sum_{(m_i, m_j) \in M} O(m_i, m_j)
@@ -133,29 +133,29 @@ The final objective function to be minimized is:
 
 where $WL$ is the total wire length and $P$ is the overlap penalty.  
 
-This formulation transforms chip floor-planning into a \textbf{combinatorial optimization problem}, where the search space includes all possible placements of modules, and the task is to identify a layout with minimal cost.  
+This formulation makes chip floor-planning a  \textbf{combinatorial optimization problem} in which the search space consists of all the possible module placements and the objective is to identify an optimal-cost layout. 
 
 \section{Methodology: Simulated Annealing}
 
 \subsection{Overview}
-Simulated Annealing (SA) is a probabilistic metaheuristic inspired by the annealing process in metallurgy \cite{Kirkpatrick}. In physical annealing, a material is heated to a high temperature and then cooled gradually, allowing atoms to settle into a low-energy crystalline state. Similarly, SA explores the solution space of an optimization problem by probabilistically accepting both improving and, with a decreasing likelihood, deteriorating solutions. This prevents the algorithm from becoming trapped in local minima and allows it to approximate a global optimum.
+Simulated Annealing (SA) is a probabilistic metaheuristic inspired by the metallurgy annealing process   (\cite{kirkpatrick1983}). During physical annealing, a substance is first heated to high temperature and then slowly cooled, allowing atoms to settle into a low-energy crystalline state. In the same way, SA explores the solution space of an optimization problem by accepting probabilistically better solutions, as well as worse ones, with a vanishing probability. This prevents the algorithm from being trapped in local minima and allows it to make an estimate of a global optimum  (\cite{chen2011,fang2009}).
 
 \subsection{State Representation}
-In the context of chip floor-planning, a \textbf{state} represents a complete placement of all modules within the chip boundary. Each module $m_i$ is associated with a position $(x_i, y_i)$ corresponding to the coordinates of its bottom-left corner. The state can be represented as:
+In chip floor-planning, a \textbf{state} represents a complete placement of all modules within the chip boundary. Each module $m_i$ is assigned a position $(x_i, y_i)$ to denote the coordinates of its bottom-left corner. The state can be represented as:
 \[
 S = \{ (m_i, x_i, y_i) \,|\, m_i \in M \}
 \]
 where $M$ is the set of all modules.
 
 \subsection{Cost Function}
-The cost function evaluates the quality of a placement and guides the optimization process. It is defined as:
+The cost function defines the quality of a placement and regulates the optimization process. It is defined as: 
 \[
 \text{Cost} = WL + P
 \]
-where $WL$ is the total wire length (Equation 1) and $P$ is the overlap penalty (Equation 2). A lower cost corresponds to a more efficient and feasible floor-plan.
+where WL is the total wire length (Equation 1) and P bis the overlap penalty (Equation 2). Lesser cost denotes a more efficient and feasible floor-plan. 
 
 \subsection{Neighborhood Function}
-To explore new solutions, SA uses a \textbf{neighborhood function}. A neighbor state is generated by selecting a random module and moving it to a new valid position within the chip boundary. This introduces diversity in the search process and enables gradual refinement of placements.
+To introduce new solutions, SA uses a \textbf{neighborhood function}. The neighboring state is generated by randomly selecting one of the modules and moving it to another new valid location on the chip boundary. This introduces diversity in the search process and allows sequential refinement of placements. 
 
 \subsection{Acceptance Criterion}
 The acceptance of a new state $S_{\text{new}}$ depends on the Metropolis criterion:
@@ -166,7 +166,7 @@ P(\text{accept}) =
 \exp\left(-\frac{\Delta E}{T}\right) & \text{if } \Delta E > 0
 \end{cases}
 \]
-where $\Delta E = \text{Cost}(S_{\text{new}}) - \text{Cost}(S_{\text{old}})$ and $T$ is the current temperature. This criterion ensures that better solutions are always accepted, while worse solutions may be accepted with a probability that decreases as the temperature cools.
+where $\Delta E = \text{Cost}(S_{\text{new}}) - \text{Cost}(S_{\text{old}})$ and $T$ is the current temperature. This criterion ensures that better solutions are always accepted, while worse solutions can be accepted with a probability that decreases with temperature.
 
 \subsection{Cooling Schedule}
 The \textbf{temperature} $T$ is gradually reduced according to a cooling schedule:
@@ -183,7 +183,7 @@ The overall simulated annealing algorithm for VLSI floor-planning can be summari
     \item Set initial temperature $T = T_{\text{start}}$.
     \item For each iteration:
     \begin{enumerate}
-        \item Generate a neighbor state $S_{\text{new}}$ by random movement of a module.
+        \item Generate a  $S_{\text{new}}$ by random movement of a module.
         \item Compute the cost of $S_{\text{new}}$.
         \item Accept or reject $S_{\text{new}}$ based on the Metropolis criterion.
         \item Update the best solution if an improved cost is found.
@@ -192,7 +192,7 @@ The overall simulated annealing algorithm for VLSI floor-planning can be summari
     \item Terminate after maximum iterations or when temperature reaches a threshold.
 \end{enumerate}
 
-This methodology allows simulated annealing to effectively search the solution space, balancing exploration and exploitation to obtain a high-quality chip layout.
+This methodology allows simulated annealing to search the solution space, balancing exploration and exploitation to obtain a high-quality chip layout.
 
 
 \section{Implementation and Results}
@@ -201,13 +201,13 @@ This methodology allows simulated annealing to effectively search the solution s
 The simulated annealing algorithm for VLSI floor-planning was implemented in Python. The implementation makes use of the following key components:
 \begin{itemize}
     \item \textbf{Programming Language:} Python 3.13
-    \item \textbf{Libraries:} \texttt{random} for stochastic moves, \texttt{math} for exponential probability functions, and \texttt{matplotlib} for visualization of cost convergence and final placements.
-    \item \textbf{Modules:} Each module was represented as a rectangle defined by its width and height.
+    \item \textbf{Libraries:} \texttt{random} , \texttt{math} for exponential probability functions, and \texttt{matplotlib} for visualization of cost convergence and final placements.
+    \item \textbf{Modules:} Each module was a rectangle with defined width and height.
     \item \textbf{Nets:} Nets were modeled as pairs of modules with Manhattan distance used to measure interconnection cost.
 \end{itemize}
 
-\subsection{Experimental Parameters}
-The following parameters were used in the simulated annealing experiments:
+\subsection{Algorithm Parameters}
+The following parameters were used in the simulated annealing runs:
 \begin{itemize}
     \item Initial Temperature $T_{\text{start}} = 100$
     \item Cooling Coefficient $\alpha = 0.995$
@@ -216,10 +216,10 @@ The following parameters were used in the simulated annealing experiments:
     \item Chip Boundary $20 \times 20$
 \end{itemize}
 
-These parameters were chosen empirically to balance exploration of the search space with convergence efficiency.
+These parameters were chosen to balance exploration of the search space with convergence efficiency.
 
 \subsection{Cost Convergence}
-Figure~\ref{fig:cost_convergence} illustrates the cost history across iterations. The cost decreases rapidly in the early stages due to acceptance of beneficial moves, followed by gradual refinement as the temperature cools. This trend confirms that the simulated annealing algorithm effectively avoids poor local minima and converges toward a high-quality solution.
+Figure~\ref{fig:cost_convergence} shows the cost history over iterations. The cost drops steeply in the initial iterations by accepting good moves, followed by slow fine-tuning as the temperature decreases. This behavior validates that the simulated annealing algorithm does not get trapped in poor local minima and converges to an optimal solution. 
 
 \begin{figure}[h!]
     \centering
@@ -229,7 +229,9 @@ Figure~\ref{fig:cost_convergence} illustrates the cost history across iterations
 \end{figure}
 
 \subsection{Final Placement}
-The final optimized placement obtained from the algorithm is shown in Figure~\ref{fig:placement}. Each rectangle represents a module, annotated with its identifier. The placement is non-overlapping and achieves a low total cost while respecting chip boundaries. Nets connecting modules are minimized in length, which improves wirelength efficiency.
+The resulting optimal placement from the algorithm is depicted in  Figure~\ref{fig:placement}. Each rectangle denotes a module, labeled with its module number. The placement is non-overlapping and has a small total cost and obeys chip boundaries. Nets between modules are minimized in length, which enhances wire length efficiency.
+
+ 
 
 \begin{figure}[h!]
     \centering
@@ -239,7 +241,7 @@ The final optimized placement obtained from the algorithm is shown in Figure~\re
 \end{figure}
 
 \subsection{Discussion of Results}
-The experimental results demonstrate that simulated annealing provides an effective approach to solving the chip floor-planning problem. The cost function, which incorporates both wirelength and overlap penalties, guides the optimization process toward feasible, high-quality layouts.  
+The results demonstrate that simulated annealing provides an effective approach to solving the chip floor-planning problem (\cite{ictact2016,chen2011}). The cost function, that has both wire length and overlap penalties, guides the optimization process toward feasible, high-quality layouts.  
 
 Notably:
 \begin{itemize}
@@ -251,43 +253,43 @@ Notably:
 Overall, the results validate simulated annealing as a practical heuristic for tackling the NP-hard floor-planning problem in VLSI design.
 
 \section{Conclusion and Future Work}
-This project explored the application of \textbf{Simulated Annealing (SA)} to the VLSI floor-planning problem. By modeling modules as rectangles and defining a cost function that combines total wire length and overlap penalties, the algorithm was able to generate non-overlapping, low-cost placements within the chip boundary. The results confirmed that SA is effective in avoiding local minima and converging to high-quality layouts, validating its role as a robust metaheuristic for combinatorial optimization in VLSI design.
+This project explored the application of \textbf{Simulated Annealing (SA)} to the VLSI floor-planning problem. Through its representation of modules as rectangles and a cost function that considers total wire length and overlap penalties, the algorithm generated non-overlapping low-cost placements inside the chip boundary. The results confirmed that SA effectively avoids local minima and converges to good-quality layouts (\cite{kirkpatrick1983,chen2011}), justifying its role as a robust metaheuristic for combinatorial optimization in VLSI design. 
 
-However, several opportunities for improvement exist. Future work may focus on:
+However, there are some areas of improvement in the future. Future work can target: 
 \begin{itemize}
-    \item Developing more advanced cost functions that incorporate additional design factors such as thermal constraints, timing analysis, and power distribution.
+    \item Investing in higher-level cost functions incorporating more design variables such as thermal constraints  (\cite{sun2024,parsac2024}), timing analysis, and power distribution.
     \item Exploring alternative neighborhood functions such as module swapping, rotation, or multi-module moves to improve solution diversity.
-    \item Investigating hybrid optimization approaches that combine SA with other heuristics such as Genetic Algorithms or Tabu Search for faster convergence and better solution quality.
-    \item Scaling the implementation to larger and more complex designs, closer to real-world industrial applications.
+    \item Exploring hybrid optimization techniques that pair SA with other heuristics such as Genetic Algorithms or Tabu Search for higher quality solutions and convergence rate (\cite{banerjee2017,fang2009}).
+    \item Scaling up the application to more difficult and larger designs, to be closer to industrial-sized real-world problems. 
 \end{itemize}
 
 \section{Applications}
-The techniques and methodologies used in this project extend beyond academic exploration and have significant relevance in practical domains:
+The methodologies and techniques used in this project have broad applicability extending beyond the domain of academic research: 
 \begin{itemize}
-    \item \textbf{ASIC and SoC Design:} Floor-planning is a crucial step in Application-Specific Integrated Circuits (ASICs) and System-on-Chip (SoC) design, directly impacting performance, power, and area.
-    \item \textbf{FPGA Placement:} Similar optimization problems arise in Field Programmable Gate Arrays (FPGAs), where simulated annealing has historically been used for placement and routing.
-    \item \textbf{General Optimization:} Beyond VLSI, simulated annealing can solve diverse optimization problems such as scheduling, resource allocation, and network design.
-    \item \textbf{Electronic Design Automation (EDA) Tools:} Modern EDA tools incorporate heuristic-based optimization techniques like SA, making this project directly aligned with industry practices.
+    \item \textbf{ASIC and SoC Design:} Floor-planning is a critical process in Application-Specific Integrated Circuits (ASICs) and System-on-Chip (SoC) design, directly impacting performance, power, and area  (\cite{parsac2024}).
+    \item \textbf{FPGA Placement:} The same problems of optimization are faced in Field Programmable Gate Arrays (FPGAs), where placement and routing have in the past been treated by simulated annealing. 
+    \item \textbf{General Optimization:} In addition to VLSI, simulated annealing can be used to solve general optimization problems such as scheduling, resource allocation, and network design. 
+    \item \textbf{Electronic Design Automation (EDA) Tools:} Modern EDA tools use heuristic-based optimization techniques such as SA, thus making this project most suitably aligned with modern industry practices. 
 \end{itemize}
 
 \section{Limitations}
-While simulated annealing proved effective in producing feasible and optimized floor-plans, the current implementation has several limitations that restrict its scalability and industrial applicability:
+Even though simulated annealing worked well to create feasible and optimized floor-plans, the current implementation has several limitations which restrict its scalability and industrial applicability: 
 
 \begin{itemize}
-    \item \textbf{Simplified Cost Function:} The cost function considers only wirelength and module overlaps. In practice, VLSI floor-planning must also account for timing, power consumption, clock distribution, and thermal constraints.
+    \item \textbf{Simplified Cost Function:} The cost function is reduced to wirelength and module overlaps. In reality, VLSI floor-planning also must be taken into account for timing, power, clock distribution, and thermal requirements. 
     
     \item \textbf{Scalability Issues:} The algorithm performs adequately for small to medium-scale problems. However, as the number of modules grows, the search space expands exponentially, leading to longer runtime and potentially less optimal solutions.
     
-    \item \textbf{Basic Move Set:} The neighborhood function only involves relocating one module at a time. More advanced moves such as rotation, swapping, or hierarchical decomposition would enhance exploration of the solution space.
+    \item \textbf{Basic Move Set:} The neighborhood function comprises only moving one module at a time. More sophisticated moves like rotation, swapping, or hierarchical decomposition would improve exploration of the solution space. 
+
+    \item \textbf{Cooling Schedule Sensitivity:} The performance of results highly relies on the selection of initial temperature, cooling coefficient, and number of iterations. Bad parameter tuning can result in premature convergence or inordinate runtime. 
     
-    \item \textbf{Cooling Schedule Sensitivity:} The quality of results is highly dependent on the choice of initial temperature, cooling coefficient, and number of iterations. Poor parameter tuning may lead to premature convergence or excessive runtime.
-    
-    \item \textbf{Lack of Industrial Benchmarks:} The experimental setup used artificial module sizes and nets. Validation against industry-standard benchmarks such as MCNC or GSRC suites would provide a stronger assessment of performance.
+    \item \textbf{Lack of Industrial Benchmarks:} Artificial module sizes and nets were used in configuring the algorithm. Industry benchmarks such as MCNC or GSRC suites would provide a more comprehensive measure of performance (\cite{sun2024}).
 \end{itemize}
 
-These limitations suggest that while simulated annealing is a valuable pedagogical and research tool, further refinement and integration with advanced optimization techniques are necessary for deployment in industrial electronic design automation (EDA) workflows.
+Thus, such shortcomings mean that simulated annealing can be a useful learning and research tool but requires improvement and augmentation with state-of-the-art optimization algorithms in order to be utilized in industrial electronic design automation (EDA) processes. 
 
-\section*{References}
+% \section*{References}
 
 \begin{thebibliography}{99}
 
