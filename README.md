@@ -10,7 +10,7 @@ The primary objective:
 2.Overlaps between modules are avoided (or heavily penalized).<br/>
 3.The placement fits within the chip boundary.
 
-Finding an optimal solution is computationally expensive due to the vast number of possible arrangements.
+Finding an optimal solution is expensive due to the vast number of possible arrangements.
 
 # Simulated Annealing
 Simulated annealing is an optimization technique that searches solution space for the global minimum through random sampling. It explores the solution space by accepting both better-cost and, with a certain probability, worse-cost solutions to avoid getting stuck in a local minimum. The probability of accepting a worse solution decreases as the simulation "cools," allowing the algorithm to converge on a high-quality global solution.
