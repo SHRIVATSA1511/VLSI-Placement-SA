@@ -28,8 +28,8 @@ nets: List[Tuple[str, str]] = [
 ]
 
 # chip dimensions(20x20)
-CHIPLENGTH: int = 20
 CHIPWIDTH: int = 20
+CHIPHEIGHT: int = 20
 
 
 def random_placement(mods: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, int]]:
@@ -42,8 +42,8 @@ def random_placement(mods: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, i
     placement: Dict[str, Tuple[int, int]] = {}
 
     for m, (w, h) in mods.items():
-        x: int = random.randint(0, CHIPLENGTH - w)
-        y: int = random.randint(0, CHIPWIDTH - h)
+        x: int = random.randint(0, CHIPWIDTH - w)
+        y: int = random.randint(0, CHIPHEIGHT - h)
 
         placement[m] = (x, y)
 
@@ -99,8 +99,8 @@ def randommove(placement: Dict[str, Tuple[int, int]]) -> Dict[str, Tuple[int, in
     m: str = random.choice(list(modules.keys()))
     w, h = modules[m]
     new_place[m] = (
-        random.randint(0, CHIPLENGTH - w),
-        random.randint(0, CHIPWIDTH - h)
+        random.randint(0, CHIPWIDTH - w),
+        random.randint(0, CHIPHEIGHT - h)
     )
     return new_place
 
@@ -112,8 +112,8 @@ def plotplacement(placement: Dict[str, Tuple[int, int]], title: str = "") -> Non
     """
     plt.figure(figsize=(6, 6))
     ax = plt.gca()
-    ax.set_xlim(0, CHIPLENGTH)
-    ax.set_ylim(0, CHIPWIDTH)
+    ax.set_xlim(0, CHIPWIDTH)
+    ax.set_ylim(0, CHIPHEIGHT)
 
     for m, (x, y) in placement.items():
         w, h = modules[m]
@@ -186,6 +186,7 @@ plt.title("Simulated Annealing Cost Convergence")
 plt.legend()
 plt.grid(True)
 plt.show()
+
 
 # --- Plot final placement ---
 plotplacement(best_placement, title=f"Final Placement (Cost={best_c})")
